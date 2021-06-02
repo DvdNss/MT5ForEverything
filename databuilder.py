@@ -34,14 +34,14 @@ DEFAULT_ARGS = dict(
     highlight_token='<hl>',  # Highlight token
     separation_token='<sep>',  # Separation token
     tokenizer_name_or_path='google/mt5-small',  # Tokenizer path
-    tokenizer_save_path='tokenizer',  # Tokenizer save path
+    global_output_dir='model',  # Tokenizer save path
     train_csv_path='data/train.tsv',  # Training file path
     valid_csv_path='data/valid.tsv',  # Validation file path
     source_column='source_text',  # Source column
     target_column='target_text',  # Target column
     train_file_path='data/train.pt',  # Training data save path
     valid_file_path='data/valid.pt',  # Validation data save path
-    databuilder_config_path='model/config.json'  # Save path of databuilder config
+    config_path='model/params.json'  # Save path of databuilder config
 )
 
 
@@ -60,8 +60,8 @@ class DatabuilderArguments:
     tokenizer_name_or_path: Optional[str] = field(default=DEFAULT_ARGS['tokenizer_name_or_path'],
                                                   metadata={"help": "Path or Hugging Face name of the tokenizer. "})
 
-    tokenizer_save_path: Optional[str] = field(default=DEFAULT_ARGS['tokenizer_save_path'],
-                                               metadata={"help": "Destination folder of the tokenizer. "})
+    global_output_dir: Optional[str] = field(default=DEFAULT_ARGS['global_output_dir'],
+                                             metadata={"help": "Destination folder of the tokenizer. "})
 
     train_csv_path: Optional[str] = field(default=DEFAULT_ARGS['train_csv_path'],
                                           metadata={"help": "Path of the csv file containing training data. "})
@@ -81,8 +81,8 @@ class DatabuilderArguments:
     target_column: Optional[str] = field(default=DEFAULT_ARGS['target_column'],
                                          metadata={"help": "Target column. "})
 
-    databuilder_config_path: Optional[str] = field(default=DEFAULT_ARGS['databuilder_config_path'],
-                                                   metadata={"help": "Save path of databuilder config. "})
+    config_path: Optional[str] = field(default=DEFAULT_ARGS['config_path'],
+                                       metadata={"help": "Save path of databuilder config. "})
 
     source_max_length: Optional[int] = field(default=DEFAULT_ARGS['source_max_length'],
                                              metadata={"help": "Maximum number of tokens in source. "})
@@ -192,7 +192,7 @@ class Databuilder:
         return encodings
 
 
-def main(from_json: bool = True, filename: str = DEFAULT_ARGS['databuilder_config_path']) -> None:
+def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']) -> None:
     """
     Building training and validation data.
 
@@ -213,7 +213,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['databuilder_confi
     db_args = parser.parse_json_file(json_file=filename)[0] if from_json else parser.parse_args_into_dataclasses()[0]
 
     # Showing config
-    with open(db_args.databuilder_config_path, "r") as config:
+    with open(db_args.config_path, "r") as config:
         config = json.load(config)
 
     logger.info("This config is being built: ")
@@ -272,15 +272,15 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['databuilder_confi
     logger.info(f"Validation dataset saved at {db_args.valid_file_path}. ")
 
     # Saving tokenizer
-    if not os.path.exists(db_args.tokenizer_save_path):
-        os.mkdir(db_args.tokenizer_save_path)
-    tokenizer.save_pretrained(db_args.tokenizer_save_path)
-    logger.info(f"Tokenizer saved at {db_args.tokenizer_save_path}. ")
+    if not os.path.exists(db_args.global_output_dir):
+        os.mkdir(db_args.global_output_dir)
+    tokenizer.save_pretrained(db_args.global_output_dir)
+    logger.info(f"Tokenizer saved at {db_args.global_output_dir}. ")
 
 
 def run(args_dict: dict = {}) -> None:
     args_dict = {**DEFAULT_ARGS, **args_dict}
-    file = dict_to_json(args_dict=args_dict, filename=args_dict['databuilder_config_path'])
+    file = dict_to_json(args_dict=args_dict, filename=args_dict['config_path'])
     main(filename=file)
 
 

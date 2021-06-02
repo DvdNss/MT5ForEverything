@@ -36,9 +36,9 @@ DEFAULT_ARGS = dict(
     model_name_or_path="",
     label_smoothing_rate=0.0,
     freeze_embeddings=False,
-    config_path="model/config.json",
+    params_path="model/params.json",
     wandb_project_name='mt5-project',
-    overwrite_output_dir=True,
+    overwrite_output_dir=True
 )
 
 
@@ -60,11 +60,11 @@ class ModelArguments:
     wandb_project_name: Optional[str] = field(default=DEFAULT_ARGS['wandb_project_name'],
                                               metadata={"help": "Name of the wandb project. "})
 
-    config_path: Optional[str] = field(default=DEFAULT_ARGS['config_path'],
+    params_path: Optional[str] = field(default=DEFAULT_ARGS['params_path'],
                                        metadata={"help": "Model configuration path "})
 
 
-def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']):
+def main(from_json: bool = True, filename: str = DEFAULT_ARGS['params_path']):
     """
     Start training.
 
@@ -115,7 +115,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']):
     ][model_args.model_name_or_path != ""]()
 
     # Loading pretrained model and tokenizer
-    tokenizer = MT5Tokenizer.from_pretrained(databuilder_args.tokenizer_save_path)
+    tokenizer = MT5Tokenizer.from_pretrained(databuilder_args.global_output_dir)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
     # Resizing embedding
@@ -135,7 +135,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']):
     valid_dataset = torch.load(databuilder_args.valid_file_path) if training_args.do_eval else None
     logger.info(f'{databuilder_args.valid_file_path} has been loaded. ')
 
-    # Initialize data_collator
+    # Initialize data collector
     data_collector = DataCollector(
         tokenizer=tokenizer,
         mode="training",
@@ -159,10 +159,10 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']):
         trainer.train()
 
         # Saving model
-        trainer.save_model()
+        trainer.save_model(training_args.output_dir)
 
         # Saving tokenizer
-        tokenizer.save_pretrained(training_args.output_dir)
+        # tokenizer.save_pretrained(training_args.output_dir)
 
     # Evaluation
     results = {}
@@ -186,11 +186,12 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']):
 
 
 def run(args_dict: dict = {}) -> None:
-    with open(DEFAULT_ARGS['config_path'], "r") as databuilder_config:
-        args_dict = {**json.load(fp=databuilder_config), **DEFAULT_ARGS, **args_dict}
+    args_dict = {**DEFAULT_ARGS, **args_dict}
+    with open(args_dict['params_path'], "r") as databuilder_config:
+        args_dict = {**json.load(fp=databuilder_config), **args_dict}
     for key in args_dict:
         logger.info("     " + key + "=" + str(args_dict[key]))
-    file = dict_to_json(args_dict=args_dict, filename=args_dict['config_path'])
+    file = dict_to_json(args_dict=args_dict, filename=args_dict['params_path'])
     main(filename=file)
 
 

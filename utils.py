@@ -7,16 +7,13 @@ Role : tools necessary for the project
 """
 
 import json
-from typing import Iterable, List
-
-from torch import nn
+import os
 
 
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
     """
     Label smoothing to prevent overconfidence for classification tasks
     (from https://fairseq.readthedocs.io/en/latest/_modules/fairseq/criterions/label_smoothed_cross_entropy.html).
-
     """
 
     if target.dim() == lprobs.dim() - 1:
@@ -48,9 +45,11 @@ def dict_to_json(args_dict: dict, filename: str) -> str:
     :param filename: json file name
     """
 
-    # Asserting file is a json file
     assert filename[-5:] == '.json', \
         "filename must be a .json file. "
+
+    # Create intermediate folders
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     # Saving the databuilder config as json file
     with open(filename, 'w') as config:

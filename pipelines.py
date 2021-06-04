@@ -6,18 +6,13 @@ Role : model pipelines
 @author : Sunwaee
 """
 
-import itertools
-import logging
-import torch
 import json
-
-from tqdm import tqdm
-from typing import Optional, Dict, Union
+import logging
+import os
 from dataclasses import dataclass, field
-from utils import dict_to_json
-from databuilder import DatabuilderArguments
-from train import ModelArguments
+from typing import Optional, List
 
+import torch
 from transformers import (
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
@@ -27,12 +22,19 @@ from transformers import (
     TrainingArguments,
 )
 
+from databuilder import DatabuilderArguments
+from train import (
+    ModelArguments,
+    DEFAULT_ARGS as model_config
+)
+from utils import dict_to_json
+
 # Tracking modules & packages hierarchy
 logger = logging.getLogger(__name__)
 
 DEFAULT_ARGS = dict(
     pipeline='requesting',
-    pipeline_config_path='model/config/config.json'
+    pipeline_config_save_path='model/config/config.json'
 )
 
 
@@ -45,8 +47,8 @@ class PipelineArguments:
     pipeline: Optional[str] = field(default=DEFAULT_ARGS['pipeline'],
                                     metadata={"help": "Pipeline to use. "})
 
-    pipeline_config_path: Optional[str] = field(default=DEFAULT_ARGS['pipeline_config_path'],
-                                                metadata={'help': 'Model config path'})
+    pipeline_config_save_path: Optional[str] = field(default=DEFAULT_ARGS['pipeline_config_save_path'],
+                                                     metadata={'help': 'Model config path'})
 
 
 class Pipeline:
@@ -109,9 +111,9 @@ class ClassicPipeline(Pipeline):
     Classic Pipeline
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
-        Initializes ClassicPipeline class.
+        Initializes RequestingPipeline class.
         """
 
         super().__init__(**kwargs)
@@ -160,7 +162,7 @@ PIPELINES = {
 }
 
 
-def main(from_json: bool = True, filename: str = DEFAULT_ARGS['pipeline_config_path']):
+def main(from_json: bool = True, filename: str = DEFAULT_ARGS['pipeline_config_save_path']):
     """
     Calls the specified pipeline.
 
@@ -188,24 +190,24 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['pipeline_config_p
     return task_pipeline(model=model, tokenizer=tokenizer)
 
 
-def run(args_dict: dict = {}, config_path: str = train_config['train_config_path']):
+def run(args_dict: dict = {}, model_config_path: str = model_config['model_config_save_path']):
     """
     Run pipeline from dict.
 
     :param args_dict: pipeline arguments dict
-    :param config_path: json path to model arguments
+    :param model_config_path: json path to model arguments
     """
 
     # Asserting config paths exist
-    assert os.path.isfile(config_path), \
-        f"Invalid filename for {config_path}, file doesn't exist. "
+    assert os.path.isfile(model_config_path), \
+        f"Invalid filename for {model_config_path}, file doesn't exist. "
 
     # Opening databuilder config path and merging it with pipeline dict
-    with open(config_path, "r") as cfg:
+    with open(model_config_path, "r") as cfg:
         args_dict = {**json.load(fp=cfg), **DEFAULT_ARGS, **args_dict}
 
     # Writing file to json
-    file = dict_to_json(args_dict=args_dict, filename=args_dict['pipeline_config_path'])
+    file = dict_to_json(args_dict=args_dict, filename=args_dict['pipeline_config_save_path'])
 
     # Calling pipeline using json as source
     pipeline = main(filename=file)

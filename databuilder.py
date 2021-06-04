@@ -15,7 +15,6 @@ from dataclasses import (
 )
 from typing import Optional
 
-import sentencepiece
 import pandas as pd
 import torch
 from nlp import Dataset
@@ -37,9 +36,9 @@ DEFAULT_ARGS = dict(
     valid_csv_path='data/valid.tsv',  # Validation file path
     source_column='source_text',  # Source column
     target_column='target_text',  # Target column
-    train_file_path='data/train.pt',  # Training data save path
-    valid_file_path='data/valid.pt',  # Validation data save path
-    databuilder_config_path='model/config/config.json'  # Save path of databuilder config
+    train_data_save_path='data/train.pt',  # Training data save path
+    valid_data_save_path='data/valid.pt',  # Validation data save path
+    databuilder_config_save_path='model/config/config.json'  # Save path of databuilder config
 )
 
 
@@ -61,11 +60,11 @@ class DatabuilderArguments:
     valid_csv_path: Optional[str] = field(default=DEFAULT_ARGS['valid_csv_path'],
                                           metadata={"help": "Path of the csv file containing validation data. "})
 
-    train_file_path: Optional[str] = field(default=DEFAULT_ARGS['train_file_path'],
-                                           metadata={"help": "Save path of the training data. "})
+    train_data_save_path: Optional[str] = field(default=DEFAULT_ARGS['train_data_save_path'],
+                                                metadata={"help": "Save path of the training data. "})
 
-    valid_file_path: Optional[str] = field(default=DEFAULT_ARGS['valid_file_path'],
-                                           metadata={"help": "Save path of the validation data. "})
+    valid_data_save_path: Optional[str] = field(default=DEFAULT_ARGS['valid_data_save_path'],
+                                                metadata={"help": "Save path of the validation data. "})
 
     source_column: Optional[str] = field(default=DEFAULT_ARGS['source_column'],
                                          metadata={"help": "Source column. "})
@@ -73,8 +72,8 @@ class DatabuilderArguments:
     target_column: Optional[str] = field(default=DEFAULT_ARGS['target_column'],
                                          metadata={"help": "Target column. "})
 
-    databuilder_config_path: Optional[str] = field(default=DEFAULT_ARGS['databuilder_config_path'],
-                                                   metadata={"help": "Save path of databuilder config. "})
+    databuilder_config_save_path: Optional[str] = field(default=DEFAULT_ARGS['databuilder_config_save_path'],
+                                                        metadata={"help": "Save path of databuilder config. "})
 
     source_max_length: Optional[int] = field(default=DEFAULT_ARGS['source_max_length'],
                                              metadata={"help": "Maximum number of tokens in source. "})
@@ -172,7 +171,7 @@ class Databuilder:
         return encodings
 
 
-def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']) -> None:
+def main(from_json: bool = True, filename: str = DEFAULT_ARGS['databuilder_config_save_path']) -> None:
     """
     Building training and validation data.
 
@@ -193,7 +192,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']) ->
     db_args = parser.parse_json_file(json_file=filename)[0] if from_json else parser.parse_args_into_dataclasses()[0]
 
     # Showing config
-    with open(db_args.databuilder_config_path, "r") as config:
+    with open(db_args.databuilder_config_save_path, "r") as config:
         config = json.load(config)
 
     logger.info("This config is being built: ")
@@ -213,9 +212,9 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']) ->
                 db_args.target_column in valid_df.columns]), \
         f"{db_args.source_column} or {db_args.target_column} column missing in {db_args.valid_csv_path}."
 
-    assert all([db_args.train_file_path[-3:] == '.pt',
-                db_args.valid_file_path[-3:] == '.pt']), \
-        "train_file_path and valid_file_path must be .pt files."
+    assert all([db_args.train_data_save_path[-3:] == '.pt',
+                db_args.valid_data_save_path[-3:] == '.pt']), \
+        "train_data_save_path and valid_data_save_path must be .pt files."
 
     # Building Datasets from dataframes
     train_dataset = Dataset.from_pandas(train_df)
@@ -244,11 +243,11 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['config_path']) ->
     valid_dataset.set_format(type='torch', columns=columns)
 
     # Saving datasets
-    torch.save(train_dataset, db_args.train_file_path)
-    logger.info(f"Train dataset saved at {db_args.train_file_path}. ")
+    torch.save(train_dataset, db_args.train_data_save_path)
+    logger.info(f"Train dataset saved at {db_args.train_data_save_path}. ")
 
-    torch.save(valid_dataset, db_args.valid_file_path)
-    logger.info(f"Validation dataset saved at {db_args.valid_file_path}. ")
+    torch.save(valid_dataset, db_args.valid_data_save_path)
+    logger.info(f"Validation dataset saved at {db_args.valid_data_save_path}. ")
 
     # Saving tokenizer
     if not os.path.exists(db_args.tokenizer_save_path):
@@ -268,7 +267,7 @@ def run(args_dict: dict = {}) -> None:
     args_dict = {**DEFAULT_ARGS, **args_dict}
 
     # Generating json file
-    file = dict_to_json(args_dict=args_dict, filename=args_dict['databuilder_config_path'])
+    file = dict_to_json(args_dict=args_dict, filename=args_dict['databuilder_config_save_path'])
 
     # Running databuilder with generated json
     main(filename=file)

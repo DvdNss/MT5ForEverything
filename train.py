@@ -22,7 +22,10 @@ from transformers import (
 )
 
 from data_collector import DataCollector
-from databuilder import DatabuilderArguments
+from databuilder import (
+    DatabuilderArguments,
+    DEFAULT_ARGS as databuilder_config
+)
 from trainer import Trainer
 from utils import (
     dict_to_json,
@@ -35,7 +38,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_ARGS = dict(
     model_name_or_path="",
     label_smoothing_rate=0.0,
-    train_config_path="model/params.json",
+    model_config_save_path="model/config/config.json",
     wandb_project_name='mt5-project',
     overwrite_output_dir=True
 )
@@ -60,11 +63,11 @@ class ModelArguments:
                                               metadata={"help": "Name of the wandb project. "})
 
     # Path to databuilder params
-    train_config_path: Optional[str] = field(default=DEFAULT_ARGS['train_config_path'],
-                                             metadata={"help": "Model configuration output path "})
+    model_config_save_path: Optional[str] = field(default=DEFAULT_ARGS['model_config_save_path'],
+                                                  metadata={"help": "Model configuration output path "})
 
 
-def main(from_json: bool = True, filename: str = DEFAULT_ARGS['train_config_path']) -> None:
+def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save_path']) -> None:
     """
     Start training.
 
@@ -80,7 +83,6 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['train_config_path
     # Checking if output folder is empty
     if (os.path.exists(training_args.output_dir)
             and os.listdir(training_args.output_dir)
-            and training_args.do_train
             and not training_args.overwrite_output_dir):
         raise ValueError(f"Output directory ({training_args.output_dir}) already exists and is not empty. "
                          f"Use --overwrite_output_dir to overcome. ")
@@ -99,7 +101,14 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['train_config_path
         bool(training_args.local_rank != -1),
         training_args.fp16,
     )
-    logger.info("Training/evaluation parameters %s", training_args)
+
+    # Showing config
+    with open(model_args.model_config_save_path, "r") as config:
+        config = json.load(config)
+
+    logger.info("The model is being trained with the following parameters: ")
+    for key in config:
+        logger.info("     " + key + "=" + str(config[key]))
 
     # Setting seed
     set_seed(training_args.seed)
@@ -114,7 +123,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['train_config_path
     ][model_args.model_name_or_path != ""]()
 
     # Loading pretrained model and tokenizer
-    tokenizer = MT5Tokenizer.from_pretrained(databuilder_args.global_output_dir)
+    tokenizer = MT5Tokenizer.from_pretrained(databuilder_args.tokenizer_save_path)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
     # Resizing embedding
@@ -123,10 +132,11 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['train_config_path
     # Loading datasets
     logger.info('Loading datasets...')
 
-    train_dataset = torch.load(databuilder_args.train_file_path) if training_args.do_train else None
-    logger.info(f'{databuilder_args.train_file_path} has been loaded. ')
-    valid_dataset = torch.load(databuilder_args.valid_file_path) if training_args.do_eval else None
-    logger.info(f'{databuilder_args.valid_file_path} has been loaded. ')
+    train_dataset = torch.load(databuilder_args.train_data_save_path)
+    logger.info(f'{databuilder_args.train_data_save_path} has been loaded. ')
+    valid_dataset = torch.load(
+        databuilder_args.valid_data_save_path) if training_args.evaluation_strategy != "no" else None
+    logger.info(f'{databuilder_args.valid_data_save_path} has been loaded. ')
 
     # Initialize DataCollector
     data_collector = DataCollector(
@@ -147,36 +157,20 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['train_config_path
     # Disabling wandb logs that are not WARNINGS
     logging.getLogger('wandb.run_manager').setLevel(logging.WARNING)
 
-    # Training
-    if training_args.do_train:
-        trainer.train()
+    # Training model
+    trainer.train()
 
-        # Saving model
-        trainer.save_model(training_args.output_dir)
+    # Saving model
+    trainer.save_model(training_args.output_dir)
+    logger.info(f'Model has been saved at {training_args.output_dir}')
 
-        # Saving tokenizer
-        tokenizer.save_pretrained(training_args.output_dir)
-
-    # Evaluation
-    results = {}
-    if training_args.do_eval and training_args.local_rank in [-1, 0]:
-        logger.info("*** Evaluate ***")
-
-        # Evaluating
-        eval_output = trainer.evaluate()
-
-        # Saving evaluation result
-        output_eval_file = os.path.join(training_args.output_dir, "eval_results.txt")
-        with open(output_eval_file, "w") as writer:
-            logger.info("***** Eval results *****")
-            for key in sorted(eval_output.keys()):
-                logger.info("  %s = %s", key, str(eval_output[key]))
-                writer.write("%s = %s\n" % (key, str(eval_output[key])))
-
-        results.update(eval_output)
+    # Saving tokenizer
+    tokenizer.save_pretrained(training_args.output_dir)
+    logger.info(f'Tokenizer has been saved at {training_args.output_dir}')
 
 
-def run(args_dict: dict = {}, databuilder_config_path: str = db_config['databuilder_config_path']) -> None:
+def run(args_dict: dict = {},
+        databuilder_config_path: str = databuilder_config['databuilder_config_save_path']) -> None:
     """
     Runs training.
 
@@ -193,7 +187,7 @@ def run(args_dict: dict = {}, databuilder_config_path: str = db_config['databuil
         args_dict = {**json.load(fp=dbcfg), **DEFAULT_ARGS, **args_dict}
 
     # Sending train dict to .json
-    file = dict_to_json(args_dict=args_dict, filename=args_dict['train_config_path'])
+    file = dict_to_json(args_dict=args_dict, filename=args_dict['model_config_save_path'])
 
     # Starting training
     main(filename=file)

@@ -24,24 +24,26 @@ This project aims to let anybody use Google MT5 models for traning/inference.
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
+    <li><a href="#aknowledgments">Acknowledgements</a></li>
   </ol>
 </details>
 
-- [ ] About The Project
-- [ ] Getting Started
-- [x] Usage
-- [x] Contact
+
 
 <!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
-Here is the project description.
+This project aims to help people use mt5 model for everything (easily).
 
 ### Built With
 
-* [Hugging Face](https://huggingface.co/)
+* [Python](https://www.python.org/)
+* [PyCharm](https://www.jetbrains.com/pycharm/)
+
+
 
 <!-- GETTING STARTED -->
 
@@ -51,18 +53,20 @@ To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-Here are the prerequisites.
+There are no prerequisites other than those of requirements.txt.
 
 ### Installation
 
 1. Clone the repo
     ```sh
-    git clone https://github.com/Sunwaee/sunwaee-mt5-template.git
+    path/to/folder$ git clone https://github.com/Sunwaee/sunwaee-mt5-template.git
     ```
 2. Install necessary packages
     ```sh
-    pip install -r requirements.txt
+    path/to/folder/sunwaee-mt5-template$ pip install -r requirements.txt
     ```
+
+
 
 <!-- USAGE EXAMPLES -->
 
@@ -77,9 +81,9 @@ Here are the prerequisites.
     with **"\t"** as separator). Source cells should be in the **"task: text"** format.
 > - databuilder arguments of your choice (see in python script below)
 >
-> **example :** source_text -> "paraphrasing: paraphrase this."  || target_text "paraphrase that."
+> **example :** source_text -> "task: apply task to this text."  || target_text "output of the task on source text"
 
-1. The first step is to convert .tsv files to data files
+1. The first step is to convert .tsv files to data files using `databuilder.py`
     - Using a Python script :
         ```python
         import databuilder 
@@ -154,8 +158,31 @@ Here are the prerequisites.
         print(inference)
         ```
 
+
+
+<!-- LICENSE -->
+
+## License
+
+Distributed under the MIT License. See `License` for more information.
+
+
+
 <!-- CONTACT -->
 
 ## Contact
 
-@Sunwaee - sunwaee.contact@gmail.com
+@Sunwaee - sunwaee.contact@gmail.com - [LinkedIn](https://www.linkedin.com/in/dvdnss/)
+
+Project Link: [https://github.com/Sunwaee/sunwaee-mt5-template](https://github.com/Sunwaee/sunwaee-mt5-template)
+
+
+
+<!-- AKNOWLEDGEMENTS -->
+
+## Aknowledgements
+
+- [HuggingFace](https://huggingface.co/) (no need to talk about it)
+- [GitHub](https://github.com/) (sometimes we forget to mention it)
+- [othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template) (should be set by default in any git)
+- [patil-suraj/question_generation](https://github.com/patil-suraj/question_generation) (learnt fromt his repo so big thanks to him)

@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 Filename : trainer.py
-Role : TO-DO: Change role of trainer.py
+Role : trainer overwrite
 
 @author : Sunwaee
 """

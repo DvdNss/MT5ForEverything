@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 Filename : data_collector.py
-Role : TO-DO: Change role of data_collector.py
+Role : data collection
 
 @author : Sunwaee
 """
@@ -76,6 +76,7 @@ class DataCollector:
         if self.mode == 'training':
             lm_labels[lm_labels[:, :] == pad_token_id] = -100
 
+        # Creating dictionary with results
         params = {
             "input_ids": input_ids,
             "attention_mask": attention_mask,

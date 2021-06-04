@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 Filename : train.py
-Role : TO-DO: Change role of train.py
+Role : model training
 
 @author : Sunwaee
 """
@@ -26,17 +26,16 @@ from databuilder import DatabuilderArguments
 from trainer import Trainer
 from utils import (
     dict_to_json,
-    freeze_embeds,
-    assert_not_all_frozen,
 )
 
+# Initializing logger
 logger = logging.getLogger(__name__)
 
+# Generating default train config
 DEFAULT_ARGS = dict(
     model_name_or_path="",
     label_smoothing_rate=0.0,
-    freeze_embeddings=False,
-    params_path="model/params.json",
+    train_config_path="model/params.json",
     wandb_project_name='mt5-project',
     overwrite_output_dir=True
 )
@@ -48,29 +47,29 @@ class ModelArguments:
     Model arguments.
     """
 
+    # Model name from hugging face or path
     model_name_or_path: Optional[str] = field(default=DEFAULT_ARGS['model_name_or_path'],
                                               metadata={"help": "Path to pretrained model or Hugging Face model. "})
 
+    # Label smoothing rate
     label_smoothing_rate: Optional[float] = field(default=DEFAULT_ARGS['label_smoothing_rate'],
                                                   metadata={"help": "Label smoothing rate. "})
 
-    freeze_embeddings: bool = field(default=DEFAULT_ARGS['freeze_embeddings'],
-                                    metadata={"help": "Whether to freeze token embeddings or not. "})
-
+    # Wandb project name for training
     wandb_project_name: Optional[str] = field(default=DEFAULT_ARGS['wandb_project_name'],
                                               metadata={"help": "Name of the wandb project. "})
 
-    params_path: Optional[str] = field(default=DEFAULT_ARGS['params_path'],
-                                       metadata={"help": "Model configuration path "})
+    # Path to databuilder params
+    train_config_path: Optional[str] = field(default=DEFAULT_ARGS['train_config_path'],
+                                             metadata={"help": "Model configuration output path "})
 
 
-def main(from_json: bool = True, filename: str = DEFAULT_ARGS['params_path']):
+def main(from_json: bool = True, filename: str = DEFAULT_ARGS['train_config_path']) -> None:
     """
     Start training.
 
     :param from_json: whether to import config from a json or not
     :param filename: name of the json file
-    :return:
     """
 
     # Parsing arguments
@@ -121,12 +120,6 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['params_path']):
     # Resizing embedding
     model.resize_token_embeddings(len(tokenizer))
 
-    # Freezing embedding if specified
-    if model_args.freeze_embeddings:
-        logger.info("Freezing embeddings of the model...")
-        freeze_embeds(model)
-        assert_not_all_frozen(model)
-
     # Loading datasets
     logger.info('Loading datasets...')
 
@@ -135,7 +128,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['params_path']):
     valid_dataset = torch.load(databuilder_args.valid_file_path) if training_args.do_eval else None
     logger.info(f'{databuilder_args.valid_file_path} has been loaded. ')
 
-    # Initialize data collector
+    # Initialize DataCollector
     data_collector = DataCollector(
         tokenizer=tokenizer,
         mode="training",
@@ -151,7 +144,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['params_path']):
         label_smoothing=model_args.label_smoothing_rate
     )
 
-    # Disabling wandb logs
+    # Disabling wandb logs that are not WARNINGS
     logging.getLogger('wandb.run_manager').setLevel(logging.WARNING)
 
     # Training
@@ -162,7 +155,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['params_path']):
         trainer.save_model(training_args.output_dir)
 
         # Saving tokenizer
-        # tokenizer.save_pretrained(training_args.output_dir)
+        tokenizer.save_pretrained(training_args.output_dir)
 
     # Evaluation
     results = {}
@@ -182,16 +175,27 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['params_path']):
 
         results.update(eval_output)
 
-    return results
 
+def run(args_dict: dict = {}, databuilder_config_path: str = db_config['databuilder_config_path']) -> None:
+    """
+    Runs training.
 
-def run(args_dict: dict = {}) -> None:
-    args_dict = {**DEFAULT_ARGS, **args_dict}
-    with open(args_dict['params_path'], "r") as databuilder_config:
-        args_dict = {**json.load(fp=databuilder_config), **args_dict}
-    for key in args_dict:
-        logger.info("     " + key + "=" + str(args_dict[key]))
-    file = dict_to_json(args_dict=args_dict, filename=args_dict['params_path'])
+    :param args_dict: training arguments dictionary
+    :param databuilder_config_path: path to databuilder config
+    """
+
+    # Asserting databuilder config path exists
+    assert os.path.isfile(databuilder_config_path), \
+        f"Invalid filename for {databuilder_config_path}, file doesn't exist. "
+
+    # Opening databuilder config path and merging it with train dict
+    with open(databuilder_config_path, "r") as dbcfg:
+        args_dict = {**json.load(fp=dbcfg), **DEFAULT_ARGS, **args_dict}
+
+    # Sending train dict to .json
+    file = dict_to_json(args_dict=args_dict, filename=args_dict['train_config_path'])
+
+    # Starting training
     main(filename=file)
 
 

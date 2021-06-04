@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 Filename : pipelines.py
-Role : TO-DO: Change role of pipelines.py
+Role : model pipelines
 
 @author : Sunwaee
 """
@@ -31,33 +31,35 @@ from transformers import (
 logger = logging.getLogger(__name__)
 
 DEFAULT_ARGS = dict(
-    pipeline='classic',
-    cfg_path='model/params.json'
+    pipeline='requesting',
+    pipeline_config_path='model/config/config.json'
 )
 
 
 @dataclass
 class PipelineArguments:
     """
-    Pipeline arguments.
+    Pipeline Arguments.
     """
 
     pipeline: Optional[str] = field(default=DEFAULT_ARGS['pipeline'],
-                                    metadata={"help": "Pipeline to use in pipelines. "})
+                                    metadata={"help": "Pipeline to use. "})
+
+    pipeline_config_path: Optional[str] = field(default=DEFAULT_ARGS['pipeline_config_path'],
+                                                metadata={'help': 'Model config path'})
 
 
-class ClassicPipeline:
+class Pipeline:
     """
-    Classic Pipeline
+    Pipeline class.
     """
 
-    def __init__(self, model: PreTrainedModel, tokenizer: PreTrainedTokenizer):
+    def __init__(self, model: PreTrainedModel, tokenizer: PreTrainedTokenizer, **kwargs):
         """
-        Initializes ClassicPipeline class.
+        Initializes Pipeline class.
 
         :param model: pretrained model used for inference
         :param tokenizer: pretrained tokenizer used for inference
-        :param use_cuda: whether to use GPU or not
         """
 
         # Initializing class attributes
@@ -71,23 +73,11 @@ class ClassicPipeline:
         self.model.to(self.device)
 
         # Checking model is MT5 model
-        assert self.model.__class__.__name__ in ["MT5ForConditionalGeneration"], 'Model should be MT5 model. '
+        assert self.model.__class__.__name__ in ["MT5ForConditionalGeneration"]
 
-    def __call__(self, inputs: str, *args, **kwargs):
-        """
-        Calls ClassicPipeline.
-
-        :param inputs: inputs that must go through the pipeline
-        :param args: other args
-        :param kwargs: other kwargs
-        :return: pipeline output
-        """
-
-        # TO-DO: Fill the call function with pipeline processes
-
-        return self._tokenize(inputs=[inputs])
-
-    def _tokenize(self, inputs, padding=True, truncation=True, add_special_tokens=True, max_length=512):
+    def _tokenize(self, inputs: List[str], padding: bool = True, truncation: bool = True,
+                  add_special_tokens: bool = True,
+                  max_length: int = 512):
         """
         Tokenizes given input.
 
@@ -98,8 +88,6 @@ class ClassicPipeline:
         :param max_length: input max length (tokens)
         :return: tokenized input
         """
-
-        # TO-DO: Make the params callable from global dict
 
         # Tokenizing input
         inputs = self.tokenizer.batch_encode_plus(
@@ -115,7 +103,50 @@ class ClassicPipeline:
         # Returning tokenized input
         return inputs
 
-    # TO-DO: Function to prepare input for Requesting Pipeline
+
+class ClassicPipeline(Pipeline):
+    """
+    Classic Pipeline
+    """
+
+    def __init__(self):
+        """
+        Initializes ClassicPipeline class.
+        """
+
+        super().__init__(**kwargs)
+
+    def __call__(self, inputs: str, *args, **kwargs):
+        """
+        Calls ClassicPipeline.
+
+        :param inputs: inputs that must go through the pipeline
+        :param args: other args
+        :param kwargs: other kwargs
+        :return: pipeline output
+        """
+
+        # Removing uneeded space characters
+        inputs = " ".join(inputs.split())
+
+        # Readying input for task
+        inputs = self._ready_for_task(inputs)
+
+        # Encoding inputs using tokenizer
+        encoded_inputs = self._tokenize(inputs=[inputs])
+
+        # Generating encoded outputs with model
+        encoded_outputs = self.model.generate(input_ids=encoded_inputs['input_ids'].to(self.device),
+                                              attention_mask=encoded_inputs['attention_mask'].to(self.device))
+
+        # Decoding outputs
+        outputs = self.tokenizer.decode(encoded_outputs[0], skip_special_tokens=True)
+
+        return outputs
+
+    @staticmethod
+    def _ready_for_task(text: str) -> str:
+        return f"task: {text} </s>"
 
 
 # Supported pipelines
@@ -129,13 +160,13 @@ PIPELINES = {
 }
 
 
-def main(from_json: bool = True, filename: str = DEFAULT_ARGS['cfg_path']):
+def main(from_json: bool = True, filename: str = DEFAULT_ARGS['pipeline_config_path']):
     """
     Calls the specified pipeline.
 
-    :param filename:
-    :param from_json:
-    :return: pipeline result
+    :param filename: json filename
+    :param from_json: whether to run pipeline from json file or not
+    :return: pipeline call function
     """
 
     # Parsing arguments
@@ -143,22 +174,42 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['cfg_path']):
     model_args, databuilder_args, training_args, pipeline_args = parser.parse_json_file(
         json_file=filename) if from_json else parser.parse_args_into_dataclasses()
 
-    assert pipeline_args.pipeline in PIPELINES, "Unknown pipeline {}, available pipelines are {}".format(pl, list(
-        PIPELINES.keys()))
+    # Asserting specified pipeline does exist
+    assert pipeline_args.pipeline in PIPELINES, \
+        "Unknown pipeline {}, available pipelines are {}".format(pipeline_args.pipeline, list(PIPELINES.keys()))
 
-    model = AutoModelForSeq2SeqLM.from_pretrained(databuilder_args.global_output_dir)
-    tokenizer = AutoTokenizer.from_pretrained(databuilder_args.global_output_dir)
+    # Loading model & tokenizer
+    model = AutoModelForSeq2SeqLM.from_pretrained(training_args.output_dir)
+    tokenizer = AutoTokenizer.from_pretrained(training_args.output_dir)
 
+    # Getting specified pipeline
     task_pipeline = PIPELINES[pipeline_args.pipeline]["impl"]
+
     return task_pipeline(model=model, tokenizer=tokenizer)
 
 
-def run(args_dict: dict = {}) -> ClassicPipeline:
-    args_dict = {**DEFAULT_ARGS, **args_dict}
-    with open(args_dict['cfg_path'], "r") as config:
-        args_dict = {**json.load(fp=config), **args_dict}
-    file = dict_to_json(args_dict=args_dict, filename=args_dict['cfg_path'])
+def run(args_dict: dict = {}, config_path: str = train_config['train_config_path']):
+    """
+    Run pipeline from dict.
+
+    :param args_dict: pipeline arguments dict
+    :param config_path: json path to model arguments
+    """
+
+    # Asserting config paths exist
+    assert os.path.isfile(config_path), \
+        f"Invalid filename for {config_path}, file doesn't exist. "
+
+    # Opening databuilder config path and merging it with pipeline dict
+    with open(config_path, "r") as cfg:
+        args_dict = {**json.load(fp=cfg), **DEFAULT_ARGS, **args_dict}
+
+    # Writing file to json
+    file = dict_to_json(args_dict=args_dict, filename=args_dict['pipeline_config_path'])
+
+    # Calling pipeline using json as source
     pipeline = main(filename=file)
+
     return pipeline
 
 

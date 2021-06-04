@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 Filename : utils.py
-Role : TO-DO: Change role of utils.py
+Role : tools necessary for the project
 
 @author : Sunwaee
 """
@@ -12,37 +12,12 @@ from typing import Iterable, List
 from torch import nn
 
 
-# these functions are taken from transformers repo
-def grad_status(model: nn.Module) -> Iterable:
-    return (par.requires_grad for par in model.parameters())
-
-
-def freeze_params(model: nn.Module):
-    for par in model.parameters():
-        par.requires_grad = False
-
-
-def freeze_embeds(model: nn.Module):
-    """Freeze token embeddings and positional embeddings for bart, just token embeddings for t5."""
-    try:
-        freeze_params(model.model.shared)
-        for d in [model.model.encoder, model.model.decoder]:
-            freeze_params(d.embed_positions)
-            freeze_params(d.embed_tokens)
-    except AttributeError:
-        freeze_params(model.shared)
-        for d in [model.encoder, model.decoder]:
-            freeze_params(d.embed_tokens)
-
-
-def assert_not_all_frozen(model):
-    model_grads: List[bool] = list(grad_status(model))
-    npars = len(model_grads)
-    assert any(model_grads), f"none of {npars} weights require grad"
-
-
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
-    """From fairseq"""
+    """
+    Label smoothing to prevent overconfidence for classification tasks
+    (from https://fairseq.readthedocs.io/en/latest/_modules/fairseq/criterions/label_smoothed_cross_entropy.html).
+
+    """
 
     if target.dim() == lprobs.dim() - 1:
         target = target.unsqueeze(-1)
@@ -58,7 +33,7 @@ def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
         smooth_loss = smooth_loss.squeeze(-1)
         bs = lprobs.shape[0]
 
-    nll_loss = nll_loss.sum()  # mean()? Scared to break other math.
+    nll_loss = nll_loss.sum()
     smooth_loss = smooth_loss.sum()
     eps_i = epsilon / lprobs.size(-1)
     loss = (1.0 - epsilon) * nll_loss + eps_i * smooth_loss
@@ -73,6 +48,7 @@ def dict_to_json(args_dict: dict, filename: str) -> str:
     :param filename: json file name
     """
 
+    # Asserting file is a json file
     assert filename[-5:] == '.json', \
         "filename must be a .json file. "
 

@@ -1,7 +1,7 @@
 # coding:utf-8
 """
 Filename : main.py
-Role : TO-DO: Change role of main.py
+Role : code testing
 
 @author : Sunwaee
 """
@@ -81,11 +81,7 @@ import pipelines
 #
 # train.run(args_dict=model_args)
 
-pipelines_args = dict(
-    pipeline='classic'
-)
-
-pipeline = pipelines.run(pipelines_args)
+pipeline = pipelines.run()
 res = pipeline(inputs='This is a test.')
 print(res)
 

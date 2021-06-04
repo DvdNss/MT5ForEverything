@@ -36,12 +36,11 @@ This project aims to let anybody use Google MT5 models for traning/inference.
 
 ## About The Project
 
-This project aims to help people use mt5 model for everything (easily).
+This project aims to help people use [Google/MT5](https://huggingface.co/models?search=google%2Fmt5-) model for everything (easily).
 
 ### Built With
 
 * [Python](https://www.python.org/)
-* [PyCharm](https://www.jetbrains.com/pycharm/)
 
 
 
@@ -165,6 +164,17 @@ There are no prerequisites other than those of requirements.txt.
 ## License
 
 Distributed under the MIT License. See `License` for more information.
+
+```quote
+@misc{sunwaee-mt5-template,
+    author = {David NAISSE - @Sunwaee},
+    title = {MT5 for everything},
+    publisher = {GitHub},
+    journal = {GitHub repository},
+    year = {2021},
+    howpublished={\url{https://github.com/Sunwaee/sunwaee-mt5-template}}
+}
+```
 
 
 

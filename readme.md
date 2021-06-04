@@ -193,7 +193,7 @@ Project Link: [https://github.com/Sunwaee/sunwaee-mt5-template](https://github.c
 
 <!-- AKNOWLEDGEMENTS -->
 
-## Aknowledgements
+## Acknowledgements
 
 - [HuggingFace](https://huggingface.co/) (no need to talk about it)
 - [GitHub](https://github.com/) (sometimes we forget to mention it)

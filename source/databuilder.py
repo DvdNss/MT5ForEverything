@@ -1,9 +1,9 @@
 # coding:utf-8
 """
-Filename : databuilder.py
-Role : data formatting and preprocessing
+Filename: databuilder.py
+Author: @DvdNss
 
-@author : Sunwaee
+Created on 11/15/2021
 """
 
 import json
@@ -23,7 +23,7 @@ from transformers import (
     HfArgumentParser
 )
 
-from utils import dict_to_json
+from source.utils import dict_to_json
 
 logger = logging.getLogger(__name__)
 

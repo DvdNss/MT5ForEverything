@@ -1,9 +1,9 @@
 # coding:utf-8
 """
-Filename : train.py
-Role : model training
+Filename: train.py
+Author: @DvdNss
 
-@author : Sunwaee
+Created on 11/15/2021
 """
 
 import json
@@ -20,14 +20,13 @@ from transformers import (
     TrainingArguments,
     set_seed,
 )
-
-from data_collator import DataCollator
-from databuilder import (
+from source.data_collator import DataCollator
+from source.databuilder import (
     DatabuilderArguments,
     DEFAULT_ARGS as databuilder_config
 )
-from trainer import Trainer
-from utils import (
+from source.trainer import Trainer
+from source.utils import (
     dict_to_json,
 )
 

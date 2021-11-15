@@ -1,9 +1,9 @@
 # coding:utf-8
 """
-Filename : pipelines.py
-Role : model pipelines
+Filename: pipelines.py
+Author: @DvdNss
 
-@author : Sunwaee
+Created on 11/15/2021
 """
 
 import json

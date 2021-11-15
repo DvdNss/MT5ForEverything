@@ -1,9 +1,9 @@
 # coding:utf-8
 """
-Filename : data_collator.py
-Role : data collator
+Filename: data_collator.py
+Author: @DvdNss
 
-@author : Sunwaee
+Created on 11/15/2021
 """
 
 from typing import Dict, List

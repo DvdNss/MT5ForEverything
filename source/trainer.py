@@ -1,9 +1,9 @@
 # coding:utf-8
 """
-Filename : trainer.py
-Role : trainer overwrite
+Filename: trainer.py
+Author: @DvdNss
 
-@author : Sunwaee
+Created on 11/15/2021
 """
 
 from typing import Any, Dict, Union
@@ -15,8 +15,6 @@ from transformers.file_utils import is_apex_available
 
 if is_apex_available():
     from apex import amp
-
-from utils import label_smoothed_nll_loss
 
 
 class Trainer(HFTrainer):

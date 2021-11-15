@@ -1,9 +1,9 @@
 # coding:utf-8
 """
-Filename : utils.py
-Role : tools necessary for the project
+Filename: utils.py
+Author: @DvdNss
 
-@author : Sunwaee
+Created on 11/15/2021
 """
 
 import json
@@ -24,8 +24,8 @@ def dict_to_json(args_dict: dict, filename: str) -> str:
     # Create intermediate folders
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    # Saving the databuilder config as json file
+    # Saving the config as json file
     with open(filename, 'w') as config:
-        json.dump(args_dict, config)
+        json.dump(args_dict, config, indent=2)
 
     return filename

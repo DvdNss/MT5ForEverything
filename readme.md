@@ -42,7 +42,7 @@ everything (easily).
 
 1. Clone the repo
     ```sh
-    path/to/folder$ git clone https://github.com/Sunwaee/sunwaee-mt5-template.git
+    path/to/folder$ git clone https://github.com/DvdNss/MT5ForEverything.git
     ```
 2. Install necessary packages
     ```sh
@@ -96,11 +96,11 @@ everything (easily).
         ```
    - Using command line :
        ```bash
-       path/to/repo$ databuilder.py --source_max_length 512 --target_max_length 30 --tokenizer_name_or_path google/mt5-small --tokenizer_save_path tokenizer --train_csv_path data/train.tsv --valid_csv_path data/valid.tsv --source_column source_text --target_column target_text --train_data_save_path data/train.pt --valid_data_save_path data/valid.pt --databuilder_config_save_path data/config/config.json  
+       path/to/repo$ python source/databuilder.py --source_max_length 512 --target_max_length 30 --tokenizer_name_or_path google/mt5-small --tokenizer_save_path tokenizer --train_csv_path data/train.tsv --valid_csv_path data/valid.tsv --source_column source_text --target_column target_text --train_data_save_path data/train.pt --valid_data_save_path data/valid.pt --databuilder_config_save_path data/config/config.json  
        ```
      or:
        ```bash
-       path/to/repo$ databuilder.py
+       path/to/repo$ python source/databuilder.py
        ```
 
 2. The next step is the training
@@ -129,7 +129,7 @@ everything (easily).
      > Note that you can add plenty of other arguments that fits Hugging Face [TrainingArguments](https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments).
    - Using command line:
         ```shell
-        path/to/repo$ python train.py --output_dir model --seed 42 --learning_rate 1e-4 --num_train_epochs 1 --per_device_train_batch_size 1 --per_device_eval_batch_size 1 --evaluation_strategy epoch
+        path/to/repo$ python source/train.py --output_dir model --seed 42 --learning_rate 1e-4 --num_train_epochs 1 --per_device_train_batch_size 1 --per_device_eval_batch_size 1 --evaluation_strategy epoch
         ```
 
 3. The final step is the inference

@@ -1,6 +1,6 @@
 # coding:utf-8
 """
-Filename : main.py
+Filename : use_case.py
 Role : code testing
 
 @author : Sunwaee
@@ -8,9 +8,7 @@ Role : code testing
 
 import pandas as pd
 
-import databuilder
-import pipelines
-import train
+from source import train, databuilder, pipelines
 
 train_data = [['first source', 'first_target'], ['second source', 'second_target']]
 eval_data = [['first source', 'first_target'], ['second source', 'second_target']]

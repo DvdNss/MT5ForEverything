@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
-<h3 align="center">MT5 for everything by Sunwaee</h3>
+<h3 align="center">MT5ForEverything by @DvdNss</h3>
 <p align="center">
-This project aims to let anybody use Google MT5 models for traning/inference.
+Making Google MT5 Transformers models fast and easy to use.
 </p>
 
 
@@ -82,7 +82,8 @@ There are no prerequisites other than those of requirements.txt.
 1. The first step is to convert **.tsv** files to data files using `databuilder.py`
    - Using a Python script :
         ```python
-        import databuilder 
+
+from src import databuilder 
         
         databuilder_args = dict(
            source_max_length=512,  # Maximum length of source text
@@ -103,7 +104,8 @@ There are no prerequisites other than those of requirements.txt.
         ```
       as this is the default configuration, it is the same as:
         ```python
-        import databuilder
+
+from src import databuilder
         
         # Running databuilder
         databuilder.run()
@@ -120,7 +122,8 @@ There are no prerequisites other than those of requirements.txt.
 2. The next step is the training
    - Using a Python script:
         ```python
-        import train
+
+from src import train
         
         train_args = dict(
            output_dir="model",  # output directory of model & tokenizer
@@ -149,7 +152,8 @@ There are no prerequisites other than those of requirements.txt.
 3. The final step is the inference
    - This time, it's only available using Python Script:
         ```python
-        import pipelines
+
+from src import pipelines
         
         pipeline_args = dict(
            pipeline='classic',

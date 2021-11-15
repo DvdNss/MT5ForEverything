@@ -21,7 +21,7 @@ from transformers import (
     set_seed,
 )
 
-from data_collector import DataCollector
+from data_collator import DataCollator
 from databuilder import (
     DatabuilderArguments,
     DEFAULT_ARGS as databuilder_config
@@ -138,8 +138,8 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
         databuilder_args.valid_data_save_path) if training_args.evaluation_strategy != "no" else None
     logger.info(f'{databuilder_args.valid_data_save_path} has been loaded. ')
 
-    # Initialize DataCollector
-    data_collector = DataCollector(
+    # Initialize DataCollator
+    data_collator = DataCollator(
         tokenizer=tokenizer,
         mode="training",
         using_tpu=training_args.tpu_num_cores is not None)
@@ -150,7 +150,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=valid_dataset,
-        data_collator=data_collector,
+        data_collator=data_collator,
         label_smoothing=model_args.label_smoothing_rate
     )
 

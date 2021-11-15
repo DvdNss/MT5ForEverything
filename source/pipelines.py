@@ -22,12 +22,12 @@ from transformers import (
     TrainingArguments,
 )
 
-from databuilder import DatabuilderArguments
-from train import (
+from source.databuilder import DatabuilderArguments
+from source.train import (
     ModelArguments,
     DEFAULT_ARGS as model_config
 )
-from utils import dict_to_json
+from source.utils import dict_to_json
 
 # Tracking modules & packages hierarchy
 logger = logging.getLogger(__name__)

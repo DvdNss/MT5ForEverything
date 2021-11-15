@@ -60,17 +60,8 @@ class Trainer(HFTrainer):
             inputs["return_tuple"] = True
 
         # Getting output
-        if self.label_smoothing == 0:
-            outputs = model(**inputs)
-            loss = outputs[0]
-        else:
-            labels = inputs.pop("labels")
-            labels[labels == -100] = model.config.pad_token_id
-            outputs = model(**inputs)
-            lprobs = torch.nn.functional.log_softmax(outputs[0], dim=-1)
-            loss, nll_loss = label_smoothed_nll_loss(
-                lprobs, labels, self.label_smoothing, ignore_index=model.config.pad_token_id
-            )
+        outputs = model(**inputs)
+        loss = outputs[0]
 
         # Calculating loss
         if self.args.n_gpu > 1:

@@ -18,14 +18,13 @@ from transformers import (
     MT5Tokenizer,
     HfArgumentParser,
     TrainingArguments,
-    set_seed,
+    set_seed, Trainer,
 )
 from source.data_collator import DataCollator
 from source.databuilder import (
     DatabuilderArguments,
     DEFAULT_ARGS as databuilder_config
 )
-from source.trainer import Trainer
 from source.utils import (
     dict_to_json,
 )
@@ -149,8 +148,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=valid_dataset,
-        data_collator=data_collator,
-        label_smoothing=model_args.label_smoothing_rate
+        data_collator=data_collator
     )
 
     # Disabling wandb logs that are not WARNINGS

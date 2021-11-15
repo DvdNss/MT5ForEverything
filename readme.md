@@ -14,19 +14,12 @@ Making Google MT5 Transformers models fast and easy to use.
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#aknowledgments">Acknowledgements</a></li>
   </ol>
 </details>
 
@@ -41,17 +34,9 @@ everything (easily).
 
 ### Built With
 
-* [Python](https://www.python.org/)
+* [Python 3.9](https://www.python.org/)
 
 <!-- GETTING STARTED -->
-
-## Getting Started
-
-To get a local copy up and running follow these simple steps.
-
-### Prerequisites
-
-There are no prerequisites other than those of requirements.txt.
 
 ### Installation
 
@@ -61,7 +46,7 @@ There are no prerequisites other than those of requirements.txt.
     ```
 2. Install necessary packages
     ```sh
-    path/to/folder/sunwaee-mt5-template$ pip install -r requirements.txt
+    path/to/repo$ pip install -r requirements.txt
     ```
 
 <!-- USAGE EXAMPLES -->
@@ -82,8 +67,7 @@ There are no prerequisites other than those of requirements.txt.
 1. The first step is to convert **.tsv** files to data files using `databuilder.py`
    - Using a Python script :
         ```python
-
-from src import databuilder 
+        from source import databuilder 
         
         databuilder_args = dict(
            source_max_length=512,  # Maximum length of source text
@@ -102,28 +86,27 @@ from src import databuilder
         # Running databuilder
         databuilder.run(args_dict=databuilder_args)
         ```
+     
       as this is the default configuration, it is the same as:
         ```python
-
-from src import databuilder
+        from source import databuilder
         
         # Running databuilder
         databuilder.run()
         ```
    - Using command line :
        ```bash
-       path/to/sunwaee-mt5-template$ databuilder.py --source_max_length 512 --target_max_length 30 --tokenizer_name_or_path google/mt5-small --tokenizer_save_path tokenizer --train_csv_path data/train.tsv --valid_csv_path data/valid.tsv --source_column source_text --target_column target_text --train_data_save_path data/train.pt --valid_data_save_path data/valid.pt --databuilder_config_save_path data/config/config.json  
+       path/to/repo$ databuilder.py --source_max_length 512 --target_max_length 30 --tokenizer_name_or_path google/mt5-small --tokenizer_save_path tokenizer --train_csv_path data/train.tsv --valid_csv_path data/valid.tsv --source_column source_text --target_column target_text --train_data_save_path data/train.pt --valid_data_save_path data/valid.pt --databuilder_config_save_path data/config/config.json  
        ```
      or:
        ```bash
-       path/to/sunwaee-mt5-template$ databuilder.py
+       path/to/repo$ databuilder.py
        ```
 
 2. The next step is the training
    - Using a Python script:
         ```python
-
-from src import train
+        from source import train
         
         train_args = dict(
            output_dir="model",  # output directory of model & tokenizer
@@ -146,14 +129,13 @@ from src import train
      > Note that you can add plenty of other arguments that fits Hugging Face [TrainingArguments](https://huggingface.co/transformers/main_classes/trainer.html#trainingarguments).
    - Using command line:
         ```shell
-        path/to/sunwaee-mt5-template$ python train.py --output_dir model --seed 42 --learning_rate 1e-4 --num_train_epochs 1 --per_device_train_batch_size 1 --per_device_eval_batch_size 1 --evaluation_strategy epoch
+        path/to/repo$ python train.py --output_dir model --seed 42 --learning_rate 1e-4 --num_train_epochs 1 --per_device_train_batch_size 1 --per_device_eval_batch_size 1 --evaluation_strategy epoch
         ```
 
 3. The final step is the inference
    - This time, it's only available using Python Script:
         ```python
-
-from src import pipelines
+        from source import pipelines
         
         pipeline_args = dict(
            pipeline='classic',
@@ -175,13 +157,13 @@ from src import pipelines
 Distributed under the MIT License. See `License` for more information.
 
 ```quote
-@misc{sunwaee-mt5-template,
-    author = {David NAISSE - @Sunwaee},
+@misc{MT5ForEverything,
+    author = {David NAISSE - @DvdNss},
     title = {MT5 for everything},
     publisher = {GitHub},
     journal = {GitHub repository},
     year = {2021},
-    howpublished={\url{https://github.com/Sunwaee/sunwaee-mt5-template}}
+    howpublished={\url{https://github.com/DvdNss/MT5ForEverything}}
 }
 ```
 
@@ -189,19 +171,6 @@ Distributed under the MIT License. See `License` for more information.
 
 ## Contact
 
-@Sunwaee - sunwaee.contact@gmail.com - [LinkedIn](https://www.linkedin.com/in/dvdnss/)
+@DvdNss - private.david.naisse@gmail.com - [LinkedIn](https://www.linkedin.com/in/dvdnss/)
 
-Project Link: [https://github.com/Sunwaee/sunwaee-mt5-template](https://github.com/Sunwaee/sunwaee-mt5-template)
-
-
-
-<!-- AKNOWLEDGEMENTS -->
-
-## Acknowledgements
-
-- [HuggingFace](https://huggingface.co/) (no need to talk about it)
-- [GitHub](https://github.com/) (sometimes we forget to mention it)
-- [othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template) (should be set by default in
-  any git)
-- [patil-suraj/question_generation](https://github.com/patil-suraj/question_generation) (learnt fromt his repo so big
-  thanks to him)
+Project Link: [https://github.com/DvdNss/MT5ForEverything](https://github.com/DvdNss/MT5ForEverything)

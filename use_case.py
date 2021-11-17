@@ -13,7 +13,6 @@ databuilder_args = dict(
     source_max_length=100,
     target_max_length=20,
     tokenizer_save_path='model/tokenizer'
-
 )
 
 # Run databuilder

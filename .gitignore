@@ -1,4 +1,3 @@
 /.idea
 /model
-/data/*.tsv
 /data/*.pt

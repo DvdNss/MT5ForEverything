@@ -35,7 +35,6 @@ logger = logging.getLogger(__name__)
 # Generating default train config
 DEFAULT_ARGS = dict(
     model_name_or_path="",
-    label_smoothing_rate=0.0,
     model_config_save_path="model/config/config.json",
     wandb_project_name='mt5-project',
     overwrite_output_dir=True
@@ -51,10 +50,6 @@ class ModelArguments:
     # Model name from hugging face or path
     model_name_or_path: Optional[str] = field(default=DEFAULT_ARGS['model_name_or_path'],
                                               metadata={"help": "Path to pretrained model or Hugging Face model. "})
-
-    # Label smoothing rate
-    label_smoothing_rate: Optional[float] = field(default=DEFAULT_ARGS['label_smoothing_rate'],
-                                                  metadata={"help": "Label smoothing rate. "})
 
     # Wandb project name for training
     wandb_project_name: Optional[str] = field(default=DEFAULT_ARGS['wandb_project_name'],

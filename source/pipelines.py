@@ -29,11 +29,11 @@ from source.train import (
 )
 from source.utils import dict_to_json
 
-# Tracking modules & packages hierarchy
+# Initializing logger
 logger = logging.getLogger(__name__)
 
 DEFAULT_ARGS = dict(
-    pipeline='requesting',
+    pipeline='classic',
     pipeline_config_save_path='model/config/config.json'
 )
 

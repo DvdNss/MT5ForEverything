@@ -186,6 +186,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['pipeline_config_s
 
     # Getting specified pipeline
     task_pipeline = PIPELINES[pipeline_args.pipeline]["impl"]
+    logger.info(f'Pipeline has been loaded and is ready for inference. ')
 
     return task_pipeline(model=model, tokenizer=tokenizer)
 

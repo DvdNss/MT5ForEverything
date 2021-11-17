@@ -154,23 +154,10 @@ everything (easily).
 
 ## License
 
-Distributed under the MIT License. See `License` for more information.
-
-```quote
-@misc{MT5ForEverything,
-    author = {David NAISSE - @DvdNss},
-    title = {MT5 for everything},
-    publisher = {GitHub},
-    journal = {GitHub repository},
-    year = {2021},
-    howpublished={\url{https://github.com/DvdNss/MT5ForEverything}}
-}
-```
+Distributed under the Apache-2.0 License. See `License` for more information.
 
 <!-- CONTACT -->
 
 ## Contact
 
 @DvdNss - private.david.naisse@gmail.com - [LinkedIn](https://www.linkedin.com/in/dvdnss/)
-
-Project Link: [https://github.com/DvdNss/MT5ForEverything](https://github.com/DvdNss/MT5ForEverything)

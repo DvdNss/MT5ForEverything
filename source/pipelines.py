@@ -180,6 +180,13 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['pipeline_config_s
     assert pipeline_args.pipeline in PIPELINES, \
         "Unknown pipeline {}, available pipelines are {}".format(pipeline_args.pipeline, list(PIPELINES.keys()))
 
+    # Logging session informations
+    logging.basicConfig(
+        format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+        level=logging.INFO if training_args.local_rank in [-1, 0] else logging.WARN,
+    )
+
     # Loading model & tokenizer
     model = AutoModelForSeq2SeqLM.from_pretrained(training_args.output_dir)
     tokenizer = AutoTokenizer.from_pretrained(training_args.output_dir)

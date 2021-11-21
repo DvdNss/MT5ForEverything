@@ -8,6 +8,7 @@ Created on 11/15/2021
 
 import json
 import logging
+import wandb
 import os
 from dataclasses import dataclass, field
 from typing import Optional
@@ -108,6 +109,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
 
     # Setting wandb project name
     os.environ["WANDB_PROJECT"] = model_args.wandb_project_name
+    wandb.init(project=model_args.wandb_project_name)
 
     # Getting model name
     model_name = [

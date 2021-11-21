@@ -218,7 +218,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['databuilder_confi
 
     # Building Datasets from dataframes
     train_dataset = Dataset.from_pandas(train_df)
-    valid_dataset = Dataset.from_pandas(train_df)
+    valid_dataset = Dataset.from_pandas(valid_df)
 
     # Loading tokenizer and adding special tokens
     tokenizer = MT5Tokenizer.from_pretrained(db_args.tokenizer_name_or_path)

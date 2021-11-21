@@ -109,6 +109,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
 
     # Setting wandb project name
     os.environ["WANDB_PROJECT"] = model_args.wandb_project_name
+    wandb.login()
     wandb.init(project=model_args.wandb_project_name)
 
     # Getting model name
@@ -145,7 +146,8 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=valid_dataset,
-        data_collator=data_collator
+        data_collator=data_collator,
+        report_to='wandb'
     )
 
     # Disabling wandb logs that are not WARNINGS

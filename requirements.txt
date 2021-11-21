@@ -1,8 +1,9 @@
 sentencepiece~=0.1.95
-pandas~=1.2.4
-nlp~=0.4.0
-transformers~=4.6.1
-tqdm~=4.61.0
+pandas
+nlp
+transformers
+tqdm
 protobuf~=3.17.1
-wandb~=0.12.7
-datasets~=1.15.1
+wandb
+datasets
+torch

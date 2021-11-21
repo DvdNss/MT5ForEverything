@@ -147,7 +147,6 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
         train_dataset=train_dataset,
         eval_dataset=valid_dataset,
         data_collator=data_collator,
-        report_to='wandb'
     )
 
     # Disabling wandb logs that are not WARNINGS

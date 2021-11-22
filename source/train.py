@@ -113,8 +113,8 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
 
     wandb.init(
         project=model_args.wandb_project_name,
-        name=f'model:{model_args.model_name_or_path}-'
-             f'dataset:{int(os.path.getsize(databuilder_args.train_data_save_path)/1000000)}MB-'
+        name=f'model:{model_args.model_name_or_path}|'
+             f'dataset:{int(os.path.getsize(databuilder_args.train_data_save_path)/1000000)}MB|'
              f'batch:{training_args.per_device_train_batch_size}'
     )
 

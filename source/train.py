@@ -100,9 +100,8 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
     with open(model_args.model_config_save_path, "r") as config:
         config = json.load(config)
 
-    # TODO: sort arguments by alphabetical order
     logger.info("The model is being trained with the following parameters: ")
-    for key in config:
+    for key in sorted(config):
         logger.info("     " + key + "=" + str(config[key]))
 
     # Setting seed

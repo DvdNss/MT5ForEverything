@@ -12,20 +12,6 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 
-def mlsum_summarization(dict: dict):
-    """
-    Map function for mlsum summarization task.
-
-    :param dict: set of features
-    :return: input/output list of size 2
-    """
-
-    input = dict['text']
-    output = dict['summary']
-
-    return [input, output]
-
-
 def squad_converter():
     """
     Convert squad to a better format.
@@ -122,11 +108,6 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size:
 
 
 if __name__ == '__main__':
-    print("")
-    # # SQUAD
-    # dataset = squad_converter()
-    # print(dataset)
+    dataset = squad_converter()
+    print(dataset)
     # dataset_to_csv(name='custom', dataset=dataset, path='../data/squad-reworked/', map_function=squad_qaqg, sep='\t')
-
-    # # MLSUM
-    # dataset_to_csv(name='mlsum', option='fr', path='../data/mlsum/', map_function=mlsum_summarization, sep='\t')

@@ -1,4 +1,4 @@
 /.idea
-/data/
-/model/
+data/*
+model/*
 !/model/mlsum/

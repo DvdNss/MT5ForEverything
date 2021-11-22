@@ -104,7 +104,7 @@ def squad_qaqg(tab):
     return 'ok'
 
 
-def dataset_to_csv(name: str, path: str, map_function, dataset: dict, option: str = '', **kwargs):
+def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, option: str = '', **kwargs):
     """
     Convert dataset to input/output tsv file.
 
@@ -136,8 +136,13 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict, option: st
 
 
 if __name__ == '__main__':
-    dataset = squad_converter()
+    # # SQUAD
+    # dataset = squad_converter()
     # print(dataset)
-    dataset_to_csv(name='custom', dataset=dataset, path='../data/squad-reworked/', map_function=squad_qaqg, sep='\t')
+    # dataset_to_csv(name='custom', dataset=dataset, path='../data/squad-reworked/', map_function=squad_qaqg, sep='\t')
+
+    # # MLSUM
     # dataset_to_csv(name='mlsum', option='fr', path='../data/mlsum/', map_function=mlsum_summarization, sep='\t')
-    # dataset_to_csv(name='xsum', option='', path='../data/xsum/', map_function=xsum_summarization, sep='\t')
+
+    # XSUM
+    dataset_to_csv(name='xsum', option='', path='../data/xsum/', map_function=xsum_summarization, sep='\t')

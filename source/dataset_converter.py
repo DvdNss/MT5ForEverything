@@ -104,7 +104,7 @@ def squad_qaqg(tab):
     return 'ok'
 
 
-def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, option: str = '', **kwargs):
+def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size: int = -1, option: str = '', **kwargs):
     """
     Convert dataset to input/output tsv file.
 
@@ -113,6 +113,7 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, optio
     :param option: dataset option
     :param map_function: function used to map dataset
     :param dataset: custom dataset
+    :param size: max size of dataset
     """
 
     # Load specified dataset with given options
@@ -131,6 +132,7 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, optio
     for key in dataset.keys():
         csv_path = f'{path}{option}/{key}.csv'
         subset = pandas.DataFrame(list(map(map_function, tqdm(dataset[key]))), columns=['source_text', 'target_text'])
+        subset = subset[0:size]
         subset.to_csv(csv_path, columns=['source_text', 'target_text'], **kwargs)
         print(f'Successfully converted {name}:{option}[{key}] to {csv_path}. ')
 

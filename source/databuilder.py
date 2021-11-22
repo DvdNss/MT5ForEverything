@@ -196,7 +196,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['databuilder_confi
         config = json.load(config)
 
     logger.info("This config is being built: ")
-    for key in config:
+    for key in sorted(config):
         logger.info("     " + key + "=" + str(config[key]))
 
     # Loading dataframes

@@ -100,6 +100,7 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
     with open(model_args.model_config_save_path, "r") as config:
         config = json.load(config)
 
+    # TODO: sort arguments by alphabetical order
     logger.info("The model is being trained with the following parameters: ")
     for key in config:
         logger.info("     " + key + "=" + str(config[key]))
@@ -110,7 +111,13 @@ def main(from_json: bool = True, filename: str = DEFAULT_ARGS['model_config_save
     # Setting wandb project name
     os.environ["WANDB_PROJECT"] = model_args.wandb_project_name
     wandb.login()
-    wandb.init(project=model_args.wandb_project_name)
+
+    wandb.init(
+        project=model_args.wandb_project_name,
+        name=f'model:{model_args.model_name_or_path}'
+             f'dataset:{os.path.getsize(databuilder_args.train_data_save_path)}-'
+             f'batch:{training_args.per_device_train_batch_size}'
+    )
 
     # Getting model name
     model_name = [

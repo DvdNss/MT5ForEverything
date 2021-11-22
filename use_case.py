@@ -13,12 +13,12 @@ databuilder_args = dict(
    target_max_length=100,  # Maximum length of target text
    tokenizer_name_or_path='google/mt5-base',  # Tokenizer path
    tokenizer_save_path='model/mlsum/tokenizer',  # Tokenizer save path
-   train_csv_path='data/mlsum/train.csv',  # Training file path
-   valid_csv_path='data/mlsum/validation.csv',  # Validation file path
+   train_csv_path='data/mlsum/fr/train.csv',  # Training file path
+   valid_csv_path='data/mlsum/fr/validation.csv',  # Validation file path
    source_column='source_text',  # Source column
    target_column='target_text',  # Target column
-   train_data_save_path='data/mlsum/train.pt',  # Training data save path
-   valid_data_save_path='data/mlsum/valid.pt',  # Validation data save path
+   train_data_save_path='data/mlsum/fr/train.pt',  # Training data save path
+   valid_data_save_path='data/mlsum/fr/valid.pt',  # Validation data save path
    databuilder_config_save_path='model/mlsum/config/config.json'  # Save path of databuilder config
 )
 

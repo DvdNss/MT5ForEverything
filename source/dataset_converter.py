@@ -60,4 +60,4 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size:
 
 
 if __name__ == '__main__':
-    dataset_to_csv(name='xsum', option='', path='../data/xsum/', map_function=xsum_summarization, sep='\t')
+    dataset_to_csv(name='xsum', option='', path='../data/xsum/', map_function=xsum_summarization, sep='\t', size=100000)

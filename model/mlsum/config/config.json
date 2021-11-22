@@ -1,0 +1,13 @@
+{
+  "source_max_length": 1024,
+  "target_max_length": 100,
+  "tokenizer_name_or_path": "google/mt5-base",
+  "tokenizer_save_path": "model/mlsum/tokenizer",
+  "train_csv_path": "data/mlsum/fr/train.csv",
+  "valid_csv_path": "data/mlsum/fr/validation.csv",
+  "source_column": "source_text",
+  "target_column": "target_text",
+  "train_data_save_path": "data/mlsum/fr/train.pt",
+  "valid_data_save_path": "data/mlsum/fr/valid.pt",
+  "databuilder_config_save_path": "model/mlsum/config/config.json"
+}

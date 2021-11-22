@@ -140,4 +140,3 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size:
 if __name__ == '__main__':
     dataset = squad_converter()
     squad_to_csv(dataset, path='../data/squad/', sep='\t')
-    # dataset_to_csv(name='custom', dataset=dataset, path='../data/squad-reworked/', map_function=squad_qaqg, sep='\t')

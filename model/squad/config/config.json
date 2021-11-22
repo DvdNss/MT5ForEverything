@@ -1,0 +1,13 @@
+{
+  "source_max_length": 512,
+  "target_max_length": 512,
+  "tokenizer_name_or_path": "google/mt5-base",
+  "tokenizer_save_path": "model/squad/tokenizer",
+  "train_csv_path": "data/squad/train.csv",
+  "valid_csv_path": "data/squad/validation.csv",
+  "source_column": "source_text",
+  "target_column": "target_text",
+  "train_data_save_path": "data/squad/train.pt",
+  "valid_data_save_path": "data/squad/valid.pt",
+  "databuilder_config_save_path": "model/squad/config/config.json"
+}

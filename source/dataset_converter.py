@@ -49,7 +49,6 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size:
     try:
         os.makedirs(path + option)
     except FileExistsError:
-        # directory already exists
         pass
 
     for key in dataset.keys():

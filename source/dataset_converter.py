@@ -26,21 +26,6 @@ def mlsum_summarization(dict: dict):
     return [input, output]
 
 
-def xsum_summarization(dict: dict):
-    """
-    Map function for xsum summarization task.
-
-    :param dict: set of features
-
-    :return: input/output list of size 2
-    """
-
-    input = dict['document'].replace('\n', '')
-    output = dict['summary'].replace('\n', '')
-
-    return [input, output]
-
-
 def squad_converter():
     """
     Convert squad to a better format.
@@ -144,6 +129,3 @@ if __name__ == '__main__':
 
     # # MLSUM
     # dataset_to_csv(name='mlsum', option='fr', path='../data/mlsum/', map_function=mlsum_summarization, sep='\t')
-
-    # XSUM
-    dataset_to_csv(name='xsum', option='', path='../data/xsum/', map_function=xsum_summarization, sep='\t')

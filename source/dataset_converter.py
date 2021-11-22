@@ -52,7 +52,7 @@ def squad_converter():
     return transformed_dataset
 
 
-def squad_to_csv(dataset, path: str = 'dataframe.csv', size: int = -1, max_length: int = 1500, **kwargs):
+def squad_to_csv(dataset, path: str = 'dataframe.csv', size: int = -1, max_length: int = 2500, **kwargs):
     """
     Convert squad to qa-qg-ae csv.
 

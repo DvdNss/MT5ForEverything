@@ -122,6 +122,7 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size:
 
 
 if __name__ == '__main__':
+    print("")
     # # SQUAD
     # dataset = squad_converter()
     # print(dataset)

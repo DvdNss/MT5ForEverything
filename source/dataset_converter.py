@@ -41,6 +41,7 @@ def squad_converter():
                     'index': index,
                     'answer': answer
                 })
+                transformed_subset[f"{context}"] = sorted(transformed_subset[f"{context}"], key=lambda d: d['index'])
 
         new_subset = []
         for key in transformed_subset.keys():
@@ -51,28 +52,57 @@ def squad_converter():
     return transformed_dataset
 
 
-def squad_qaqg(tab):
+def squad_to_csv(dataset, path: str = 'dataframe.csv', size: int = -1, **kwargs):
     """
-    Map function for squad qa-qg task.
+    Convert squad to qa-qg-ae csv.
 
-    :param tab: set of features
-
-    :return: input/output list of size 2
+    :param dataset: transformed squad dataset
+    :param size: max size of transformed dataset
+    :param path: path to generated csv files
     """
 
-    context = tab[0]
-    items = tab[1]  # question, index, answer
+    for subset in dataset.keys():  # train, validation
+        # Init empty list
+        data = []
+        csv_path = f"{path}{subset}.csv"
 
-    input_ae = context
-    for answer in items:
-        question = answer['question']
-        index = answer['index']
-        answer = answer['answer']
-        # TODO: generate input/output dataset for squad here
+        for text in tqdm(dataset[subset]):
+            # Pull context
+            context = text[0]
 
-        context[index: index + len(answer['answer'])].replace(answer['answer'])
+            # Generate ae input
+            input_ae = f"extract answer: {context}"
+            output_ae = context
 
-    return 'ok'
+            count = 0
+            for content in text[1]:
+                # Pull content
+                question = content['question']
+                index = content['index']
+                answer = content['answer']
+
+                # Generate qg input/output
+                input_qg = f"generate question: {context[0:index]}<hl> {answer} <hl>{context[index + len(answer):-1]}"
+                output_qg = question
+                data.append([input_qg, output_qg])
+
+                # Generate qa input/output
+                input_qa = f"context: {context} <sep> question: {question}"
+                output_qa = answer
+                data.append([input_qa, output_qa])
+
+                # Generate ae output
+                output_ae = f"{output_ae[0:index + count]}<hl> {answer} <hl>{output_ae[index + count + len(answer):]}"
+
+                count += 10
+
+            # Add transformed example in data
+            data.append([input_ae, output_ae])
+
+        dataframe = pandas.DataFrame(data, columns=['source_text', 'target_text'])
+        dataframe = dataframe[:size] if size != -1 else dataframe
+        dataframe.to_csv(csv_path, columns=['source_text', 'target_text'], **kwargs)
+        print(f'Successfully converted squad:{subset}[{len(dataframe)}] to {csv_path}. ')
 
 
 def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size: int = -1, option: str = '', **kwargs):
@@ -109,5 +139,5 @@ def dataset_to_csv(name: str, path: str, map_function, dataset: dict = {}, size:
 
 if __name__ == '__main__':
     dataset = squad_converter()
-    print(dataset)
+    squad_to_csv(dataset, path='../data/squad/', sep='\t')
     # dataset_to_csv(name='custom', dataset=dataset, path='../data/squad-reworked/', map_function=squad_qaqg, sep='\t')

@@ -52,13 +52,14 @@ def squad_converter():
     return transformed_dataset
 
 
-def squad_to_csv(dataset, path: str = 'dataframe.csv', size: int = -1, **kwargs):
+def squad_to_csv(dataset, path: str = 'dataframe.csv', size: int = -1, max_length: int = 1500, **kwargs):
     """
     Convert squad to qa-qg-ae csv.
 
     :param dataset: transformed squad dataset
     :param size: max size of transformed dataset
     :param path: path to generated csv files
+    :param max_length: max length of sentence in chars
     """
 
     for subset in dataset.keys():  # train, validation
@@ -67,37 +68,42 @@ def squad_to_csv(dataset, path: str = 'dataframe.csv', size: int = -1, **kwargs)
         csv_path = f"{path}{subset}.csv"
 
         for text in tqdm(dataset[subset]):
-            # Pull context
-            context = text[0]
+            if len(text[0]) < max_length:
+                # Pull context
+                context = text[0]
 
-            # Generate ae input
-            input_ae = f"extract answer: {context}"
-            output_ae = context
+                # Generate ae input
+                input_ae = f"extract answer: {context}"
+                output_ae = context
 
-            count = 0
-            for content in text[1]:
-                # Pull content
-                question = content['question']
-                index = content['index']
-                answer = content['answer']
+                count = 0
+                for content in text[1]:
+                    # Pull content
+                    question = content['question']
+                    index = content['index']
+                    answer = content['answer']
 
-                # Generate qg input/output
-                input_qg = f"generate question: {context[0:index]}<hl> {answer} <hl>{context[index + len(answer):-1]}"
-                output_qg = question
-                data.append([input_qg, output_qg])
+                    # Generate qg input/output
+                    input_qg = f"generate question: {context[0:index]}<hl> {answer} <hl>{context[index + len(answer):-1]}"
+                    output_qg = question
+                    data.append([input_qg, output_qg])
 
-                # Generate qa input/output
-                input_qa = f"context: {context} <sep> question: {question}"
-                output_qa = answer
-                data.append([input_qa, output_qa])
+                    # Generate qa input/output
+                    input_qa = f"context: {context} <sep> question: {question}"
+                    output_qa = answer
+                    data.append([input_qa, output_qa])
 
-                # Generate ae output
-                output_ae = f"{output_ae[0:index + count]}<hl> {answer} <hl>{output_ae[index + count + len(answer):]}"
+                    # Generate ae output
+                    output_ae = f"{output_ae[0:index + count]}<hl> {answer} <hl>{output_ae[index + count + len(answer):]}"
 
-                count += 10
+                    count += 10
 
-            # Add transformed example in data
-            data.append([input_ae, output_ae])
+                # Add transformed example in data
+                data.append([input_ae, output_ae])
+
+        for i in range(0, len(data)):
+            for j in range(0, len(data[i])):
+                data[i][j] = data[i][j].replace('\n', '')
 
         dataframe = pandas.DataFrame(data, columns=['source_text', 'target_text'])
         dataframe = dataframe[:size] if size != -1 else dataframe
